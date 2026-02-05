@@ -1,0 +1,976 @@
+---
+interface Props {
+  storeName?: string;
+}
+
+const { storeName = "KASHOS.DIGITAL" } = Astro.props;
+---
+
+<div id="boot-container" class="boot-container">
+  <!-- BIOS/POST Screen -->
+  <div id="bios-screen" class="bios-screen">
+    <div class="bios-content">
+      <div class="bios-header">
+        <pre class="bios-logo">
+██╗  ██╗ █████╗ ███████╗██╗  ██╗ ██████╗ ███████╗
+██║ ██╔╝██╔══██╗██╔════╝██║  ██║██╔═══██╗██╔════╝
+█████╔╝ ███████║███████╗███████║██║   ██║███████╗
+██╔═██╗ ██╔══██║╚════██║██╔══██║██║   ██║╚════██║
+██║  ██╗██║  ██║███████║██║  ██║╚██████╔╝███████║
+╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝
+        </pre>
+        <div class="bios-version">KASHOS DIGITAL BIOS v2.4.1</div>
+        <div class="bios-copyright">Copyright (C) 2024-2026 Kashos Digital Inc.</div>
+      </div>
+
+      <div class="bios-info" id="bios-info">
+        <div class="info-line" data-delay="200">Main Processor: KASHOS Digital Core™ @ 4.2GHz</div>
+        <div class="info-line" data-delay="400">Memory Test: <span id="memory-test">0</span> MB OK</div>
+        <div class="info-line" data-delay="800">Initializing USB Controllers... Done</div>
+        <div class="info-line" data-delay="1000">Detecting Primary Display... KASHOS HD Panel [OK]</div>
+        <div class="info-line" data-delay="1200">Storage: KASHOS SSD 512GB [OK]</div>
+        <div class="info-line" data-delay="1400">Network: KASHOS Net Adapter [Connected]</div>
+        <div class="info-line" data-delay="1600">GPU: KASHOS Graphics Engine v3.0 [OK]</div>
+      </div>
+
+      <div class="bios-footer" id="bios-footer">
+        <div class="boot-device">Boot Device: Internal SSD</div>
+        <div class="press-key">Press DEL to enter SETUP, F12 for Boot Menu</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen hidden">
+    <div class="loading-content">
+      <div class="loading-logo">
+        <div class="logo-circle">
+          <div class="logo-inner">K</div>
+        </div>
+      </div>
+      <div class="loading-text">{storeName}</div>
+      <div class="loading-bar-container">
+        <div class="loading-bar" id="loading-bar"></div>
+      </div>
+      <div class="loading-status" id="loading-status">Starting services...</div>
+    </div>
+  </div>
+
+  <!-- OS Desktop -->
+  <div id="os-screen" class="os-screen hidden">
+    <div class="os-desktop">
+      <!-- Desktop Icons -->
+      <div class="desktop-icons">
+        <div class="desktop-icon" data-app="store">
+          <div class="icon-image store-icon">🛒</div>
+          <div class="icon-label">Store</div>
+        </div>
+        <div class="desktop-icon" data-app="catalog">
+          <div class="icon-image catalog-icon">📦</div>
+          <div class="icon-label">Catalog</div>
+        </div>
+        <div class="desktop-icon" data-app="pos">
+          <div class="icon-image pos-icon">💳</div>
+          <div class="icon-label">POS System</div>
+        </div>
+        <div class="desktop-icon" data-app="inventory">
+          <div class="icon-image inventory-icon">📊</div>
+          <div class="icon-label">Inventory</div>
+        </div>
+        <div class="desktop-icon" data-app="settings">
+          <div class="icon-image settings-icon">⚙️</div>
+          <div class="icon-label">Settings</div>
+        </div>
+        <div class="desktop-icon" data-app="support">
+          <div class="icon-image support-icon">💬</div>
+          <div class="icon-label">Support</div>
+        </div>
+      </div>
+
+      <!-- Taskbar -->
+      <div class="taskbar">
+        <div class="taskbar-start">
+          <button class="start-button" id="start-button">
+            <span class="start-logo">K</span>
+            <span class="start-text">Start</span>
+          </button>
+        </div>
+        <div class="taskbar-apps" id="taskbar-apps">
+          <!-- Active apps will appear here -->
+        </div>
+        <div class="taskbar-tray">
+          <div class="tray-icons">
+            <span class="tray-icon">📶</span>
+            <span class="tray-icon">🔊</span>
+            <span class="tray-icon">🔋</span>
+          </div>
+          <div class="system-clock" id="system-clock">00:00</div>
+        </div>
+      </div>
+
+      <!-- Start Menu -->
+      <div class="start-menu hidden" id="start-menu">
+        <div class="start-menu-header">
+          <div class="user-avatar">K</div>
+          <div class="user-name">{storeName}</div>
+        </div>
+        <div class="start-menu-items">
+          <div class="menu-item" data-app="store">
+            <span class="menu-icon">🛒</span>
+            <span>Store Front</span>
+          </div>
+          <div class="menu-item" data-app="catalog">
+            <span class="menu-icon">📦</span>
+            <span>Product Catalog</span>
+          </div>
+          <div class="menu-item" data-app="pos">
+            <span class="menu-icon">💳</span>
+            <span>Point of Sale</span>
+          </div>
+          <div class="menu-item" data-app="inventory">
+            <span class="menu-icon">📊</span>
+            <span>Inventory Manager</span>
+          </div>
+          <div class="menu-separator"></div>
+          <div class="menu-item" data-app="settings">
+            <span class="menu-icon">⚙️</span>
+            <span>Settings</span>
+          </div>
+          <div class="menu-item" id="shutdown-btn">
+            <span class="menu-icon">⏻</span>
+            <span>Restart Display</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Window Container -->
+      <div class="window-container" id="window-container">
+        <!-- Windows will be created here dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Boot Container */
+  .boot-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden;
+    z-index: 9999;
+  }
+
+  /* BIOS Screen */
+  .bios-screen {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    color: #aaa;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bios-content {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .bios-logo {
+    color: #00ff00;
+    font-size: clamp(6px, 1.2vw, 14px);
+    line-height: 1.2;
+    margin-bottom: 10px;
+    white-space: pre;
+  }
+
+  .bios-version {
+    color: #fff;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  .bios-copyright {
+    color: #888;
+    font-size: 12px;
+    margin-bottom: 30px;
+  }
+
+  .bios-info {
+    margin: 20px 0;
+  }
+
+  .info-line {
+    color: #ccc;
+    font-size: 14px;
+    margin: 8px 0;
+    opacity: 0;
+    animation: fadeIn 0.3s forwards;
+  }
+
+  .bios-footer {
+    position: absolute;
+    bottom: 30px;
+    left: 20px;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+    animation-delay: 2s;
+  }
+
+  .boot-device {
+    color: #fff;
+    margin-bottom: 10px;
+  }
+
+  .press-key {
+    color: #888;
+    font-size: 12px;
+  }
+
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
+  /* Loading Screen */
+  .loading-screen {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .loading-content {
+    text-align: center;
+  }
+
+  .loading-logo {
+    margin-bottom: 30px;
+  }
+
+  .logo-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00ff88 0%, #00ccff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .logo-inner {
+    font-size: 48px;
+    font-weight: bold;
+    color: #1a1a2e;
+    font-family: 'Arial', sans-serif;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
+    50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(0, 255, 136, 0.8); }
+  }
+
+  .loading-text {
+    color: #fff;
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 8px;
+    margin-bottom: 40px;
+    font-family: 'Arial', sans-serif;
+  }
+
+  .loading-bar-container {
+    width: 300px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 0 auto 20px;
+  }
+
+  .loading-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #00ff88, #00ccff);
+    transition: width 0.3s ease;
+  }
+
+  .loading-status {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    font-family: 'Arial', sans-serif;
+  }
+
+  /* OS Desktop */
+  .os-screen {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .os-desktop {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23667eea"/><stop offset="100%" style="stop-color:%23764ba2"/></linearGradient></defs><rect fill="url(%23g)" width="100" height="100"/></svg>');
+    background-size: cover;
+  }
+
+  /* Desktop Icons */
+  .desktop-icons {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 80px);
+    gap: 10px;
+    max-width: 200px;
+  }
+
+  .desktop-icon {
+    width: 80px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s;
+  }
+
+  .desktop-icon:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .desktop-icon:active {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .icon-image {
+    font-size: 36px;
+    margin-bottom: 5px;
+  }
+
+  .icon-label {
+    color: #fff;
+    font-size: 11px;
+    font-family: 'Arial', sans-serif;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    word-wrap: break-word;
+  }
+
+  /* Taskbar */
+  .taskbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+  }
+
+  .taskbar-start {
+    margin-right: 10px;
+  }
+
+  .start-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+    font-family: 'Arial', sans-serif;
+  }
+
+  .start-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .start-logo {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #00ff88, #00ccff);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #1a1a2e;
+    font-size: 14px;
+  }
+
+  .start-text {
+    font-size: 14px;
+  }
+
+  .taskbar-apps {
+    flex: 1;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+  }
+
+  .taskbar-app {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: 'Arial', sans-serif;
+    white-space: nowrap;
+  }
+
+  .taskbar-app.active {
+    background: rgba(255, 255, 255, 0.2);
+    border-bottom: 2px solid #00ff88;
+  }
+
+  .taskbar-tray {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: 10px;
+  }
+
+  .tray-icons {
+    display: flex;
+    gap: 8px;
+    font-size: 14px;
+  }
+
+  .system-clock {
+    color: #fff;
+    font-size: 12px;
+    font-family: 'Arial', sans-serif;
+  }
+
+  /* Start Menu */
+  .start-menu {
+    position: absolute;
+    bottom: 58px;
+    left: 10px;
+    width: 280px;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(20px);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .start-menu-header {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .user-avatar {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  .user-name {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Arial', sans-serif;
+  }
+
+  .start-menu-items {
+    padding: 10px 0;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 20px;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+  }
+
+  .menu-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .menu-icon {
+    font-size: 18px;
+  }
+
+  .menu-separator {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 10px 20px;
+  }
+
+  /* Windows */
+  .window-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 48px;
+    pointer-events: none;
+  }
+
+  .window {
+    position: absolute;
+    min-width: 400px;
+    min-height: 300px;
+    background: rgba(30, 30, 40, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    pointer-events: auto;
+    animation: windowOpen 0.3s ease;
+  }
+
+  @keyframes windowOpen {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .window-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px;
+    background: rgba(0, 0, 0, 0.3);
+    cursor: move;
+  }
+
+  .window-title {
+    color: #fff;
+    font-size: 14px;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .window-controls {
+    display: flex;
+    gap: 8px;
+  }
+
+  .window-btn {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+  }
+
+  .window-btn.close { background: #ff5f57; }
+  .window-btn.minimize { background: #ffbd2e; }
+  .window-btn.maximize { background: #28ca41; }
+
+  .window-content {
+    padding: 20px;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  /* Utility */
+  .hidden {
+    display: none !important;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .bios-logo {
+      font-size: 5px;
+    }
+    .loading-text {
+      font-size: 20px;
+      letter-spacing: 4px;
+    }
+    .start-menu {
+      width: calc(100% - 20px);
+    }
+    .window {
+      min-width: calc(100% - 40px);
+      left: 20px !important;
+    }
+  }
+</style>
+
+<script>
+  // Boot sequence timing
+  const BIOS_DURATION = 3500;
+  const LOADING_DURATION = 4000;
+
+  // DOM Elements
+  const biosScreen = document.getElementById('bios-screen');
+  const loadingScreen = document.getElementById('loading-screen');
+  const osScreen = document.getElementById('os-screen');
+  const memoryTest = document.getElementById('memory-test');
+  const loadingBar = document.getElementById('loading-bar');
+  const loadingStatus = document.getElementById('loading-status');
+  const startButton = document.getElementById('start-button');
+  const startMenu = document.getElementById('start-menu');
+  const systemClock = document.getElementById('system-clock');
+  const windowContainer = document.getElementById('window-container');
+  const taskbarApps = document.getElementById('taskbar-apps');
+
+  let openWindows: { [key: string]: HTMLElement } = {};
+  let windowZIndex = 100;
+
+  // Initialize boot sequence
+  function initBootSequence() {
+    // Animate BIOS info lines
+    const infoLines = document.querySelectorAll('.info-line');
+    infoLines.forEach((line, index) => {
+      const el = line as HTMLElement;
+      el.style.animationDelay = `${(index + 1) * 200}ms`;
+    });
+
+    // Memory test animation
+    let memory = 0;
+    const memoryInterval = setInterval(() => {
+      memory += Math.floor(Math.random() * 512) + 256;
+      if (memory >= 16384) {
+        memory = 16384;
+        clearInterval(memoryInterval);
+      }
+      if (memoryTest) memoryTest.textContent = memory.toString();
+    }, 100);
+
+    // Transition to loading screen
+    setTimeout(() => {
+      if (biosScreen) biosScreen.classList.add('hidden');
+      if (loadingScreen) loadingScreen.classList.remove('hidden');
+      startLoadingSequence();
+    }, BIOS_DURATION);
+  }
+
+  // Loading sequence
+  function startLoadingSequence() {
+    const loadingSteps = [
+      'Starting services...',
+      'Loading system modules...',
+      'Initializing store interface...',
+      'Connecting to inventory...',
+      'Starting POS system...',
+      'Loading product catalog...',
+      'Almost ready...',
+      'Welcome to KASHOS.DIGITAL'
+    ];
+
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+      progress += Math.random() * 15 + 5;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(progressInterval);
+        setTimeout(() => {
+          if (loadingScreen) loadingScreen.classList.add('hidden');
+          if (osScreen) osScreen.classList.remove('hidden');
+          initOS();
+        }, 500);
+      }
+      if (loadingBar) loadingBar.style.width = `${progress}%`;
+
+      const stepIndex = Math.min(Math.floor((progress / 100) * loadingSteps.length), loadingSteps.length - 1);
+      if (loadingStatus) loadingStatus.textContent = loadingSteps[stepIndex];
+    }, LOADING_DURATION / 20);
+  }
+
+  // Initialize OS
+  function initOS() {
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // Start menu toggle
+    if (startButton) {
+      startButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (startMenu) startMenu.classList.toggle('hidden');
+      });
+    }
+
+    // Close start menu when clicking elsewhere
+    document.addEventListener('click', () => {
+      if (startMenu) startMenu.classList.add('hidden');
+    });
+
+    // Desktop icons
+    document.querySelectorAll('.desktop-icon').forEach(icon => {
+      icon.addEventListener('dblclick', () => {
+        const app = icon.getAttribute('data-app');
+        if (app) openWindow(app);
+      });
+    });
+
+    // Menu items
+    document.querySelectorAll('.menu-item[data-app]').forEach(item => {
+      item.addEventListener('click', () => {
+        const app = item.getAttribute('data-app');
+        if (app) openWindow(app);
+        if (startMenu) startMenu.classList.add('hidden');
+      });
+    });
+
+    // Shutdown button
+    const shutdownBtn = document.getElementById('shutdown-btn');
+    if (shutdownBtn) {
+      shutdownBtn.addEventListener('click', () => {
+        location.reload();
+      });
+    }
+  }
+
+  // Update system clock
+  function updateClock() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    if (systemClock) systemClock.textContent = `${hours}:${minutes}`;
+  }
+
+  // Window content templates
+  const windowContent: { [key: string]: { title: string, icon: string, content: string } } = {
+    store: {
+      title: 'Store Front',
+      icon: '🛒',
+      content: `
+        <h2 style="margin-bottom: 15px; color: #00ff88;">Welcome to KASHOS.DIGITAL Store</h2>
+        <p style="margin-bottom: 20px; color: #aaa;">Your digital retail solution is ready.</p>
+        <div style="display: grid; gap: 15px;">
+          <div style="padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+            <h3 style="color: #fff; margin-bottom: 5px;">📈 Today's Sales</h3>
+            <p style="font-size: 24px; color: #00ff88;">$12,458.00</p>
+          </div>
+          <div style="padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+            <h3 style="color: #fff; margin-bottom: 5px;">👥 Customers</h3>
+            <p style="font-size: 24px; color: #00ccff;">147</p>
+          </div>
+        </div>
+      `
+    },
+    catalog: {
+      title: 'Product Catalog',
+      icon: '📦',
+      content: `
+        <h2 style="margin-bottom: 15px;">Product Catalog</h2>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 4px; display: flex; justify-content: space-between;">
+            <span>Premium Widget</span><span style="color: #00ff88;">$49.99</span>
+          </div>
+          <div style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 4px; display: flex; justify-content: space-between;">
+            <span>Digital Service Pack</span><span style="color: #00ff88;">$99.99</span>
+          </div>
+          <div style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 4px; display: flex; justify-content: space-between;">
+            <span>Enterprise License</span><span style="color: #00ff88;">$299.99</span>
+          </div>
+        </div>
+      `
+    },
+    pos: {
+      title: 'Point of Sale',
+      icon: '💳',
+      content: `
+        <h2 style="margin-bottom: 15px;">POS Terminal</h2>
+        <div style="padding: 20px; background: rgba(255,255,255,0.05); border-radius: 8px; text-align: center;">
+          <p style="color: #aaa; margin-bottom: 10px;">Current Transaction</p>
+          <p style="font-size: 36px; color: #00ff88; font-weight: bold;">$0.00</p>
+          <p style="color: #888; margin-top: 10px;">Ready for new transaction</p>
+        </div>
+      `
+    },
+    inventory: {
+      title: 'Inventory Manager',
+      icon: '📊',
+      content: `
+        <h2 style="margin-bottom: 15px;">Inventory Status</h2>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(0,255,136,0.1); border-radius: 4px;">
+            <span>In Stock</span><span style="color: #00ff88;">1,247 items</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(255,189,46,0.1); border-radius: 4px;">
+            <span>Low Stock</span><span style="color: #ffbd2e;">23 items</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(255,95,87,0.1); border-radius: 4px;">
+            <span>Out of Stock</span><span style="color: #ff5f57;">5 items</span>
+          </div>
+        </div>
+      `
+    },
+    settings: {
+      title: 'Settings',
+      icon: '⚙️',
+      content: `
+        <h2 style="margin-bottom: 15px;">System Settings</h2>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Display Mode</span>
+            <span style="padding: 5px 15px; background: #667eea; border-radius: 4px;">Kiosk</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Auto-start Apps</span>
+            <span style="color: #00ff88;">Enabled</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Network Status</span>
+            <span style="color: #00ff88;">Connected</span>
+          </div>
+        </div>
+      `
+    },
+    support: {
+      title: 'Support',
+      icon: '💬',
+      content: `
+        <h2 style="margin-bottom: 15px;">Support Center</h2>
+        <p style="color: #aaa; margin-bottom: 20px;">Need help? Contact our support team.</p>
+        <div style="padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+          <p style="margin-bottom: 10px;">📧 support@kashos.digital</p>
+          <p style="margin-bottom: 10px;">📞 1-800-KASHOS</p>
+          <p>💬 Live chat available 24/7</p>
+        </div>
+      `
+    }
+  };
+
+  // Open window
+  function openWindow(appName: string) {
+    if (openWindows[appName]) {
+      // Focus existing window
+      openWindows[appName].style.zIndex = (++windowZIndex).toString();
+      return;
+    }
+
+    const app = windowContent[appName];
+    if (!app) return;
+
+    const window = document.createElement('div');
+    window.className = 'window';
+    window.style.zIndex = (++windowZIndex).toString();
+    window.style.left = `${50 + Object.keys(openWindows).length * 30}px`;
+    window.style.top = `${50 + Object.keys(openWindows).length * 30}px`;
+    window.style.width = '500px';
+    window.style.height = '400px';
+
+    window.innerHTML = `
+      <div class="window-header">
+        <div class="window-title">
+          <span>${app.icon}</span>
+          <span>${app.title}</span>
+        </div>
+        <div class="window-controls">
+          <button class="window-btn minimize"></button>
+          <button class="window-btn maximize"></button>
+          <button class="window-btn close"></button>
+        </div>
+      </div>
+      <div class="window-content">
+        ${app.content}
+      </div>
+    `;
+
+    // Close button
+    const closeBtn = window.querySelector('.window-btn.close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        window.remove();
+        delete openWindows[appName];
+        updateTaskbar();
+      });
+    }
+
+    // Focus on click
+    window.addEventListener('mousedown', () => {
+      window.style.zIndex = (++windowZIndex).toString();
+    });
+
+    // Dragging
+    const header = window.querySelector('.window-header') as HTMLElement;
+    if (header) {
+      let isDragging = false;
+      let offsetX = 0;
+      let offsetY = 0;
+
+      header.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - window.offsetLeft;
+        offsetY = e.clientY - window.offsetTop;
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          window.style.left = `${e.clientX - offsetX}px`;
+          window.style.top = `${e.clientY - offsetY}px`;
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+    }
+
+    if (windowContainer) windowContainer.appendChild(window);
+    openWindows[appName] = window;
+    updateTaskbar();
+  }
+
+  // Update taskbar with open apps
+  function updateTaskbar() {
+    if (!taskbarApps) return;
+    taskbarApps.innerHTML = '';
+
+    Object.keys(openWindows).forEach(appName => {
+      const app = windowContent[appName];
+      if (!app) return;
+
+      const btn = document.createElement('button');
+      btn.className = 'taskbar-app active';
+      btn.innerHTML = `${app.icon} ${app.title}`;
+      btn.addEventListener('click', () => {
+        openWindows[appName].style.zIndex = (++windowZIndex).toString();
+      });
+      taskbarApps.appendChild(btn);
+    });
+  }
+
+  // Start boot sequence on load
+  document.addEventListener('DOMContentLoaded', initBootSequence);
+</script>
