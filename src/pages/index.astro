@@ -24,18 +24,41 @@ const paymentMethods = [
   {
     label: "Apple Pay",
     detail: "Tap-ready wallets",
+    icon: "AP",
+    tone: "apple",
   },
   {
     label: "Google Pay",
     detail: "Android checkout",
+    icon: "GP",
+    tone: "google",
   },
   {
     label: "Cards",
     detail: "Visa • MC • Amex",
+    icon: "CC",
+    tone: "cards",
   },
   {
     label: "Bank Transfer",
     detail: "Invoice flows",
+    icon: "ACH",
+    tone: "bank",
+  },
+];
+
+const promoTiles = [
+  {
+    title: "Featured Drop",
+    detail: "Holo Jackets • Limited run",
+  },
+  {
+    title: "In-Store Only",
+    detail: "Bundle pricing + instant setup",
+  },
+  {
+    title: "Demo Loop",
+    detail: "Live catalog + checkout prompts",
   },
 ];
 ---
@@ -102,6 +125,14 @@ const paymentMethods = [
           <div class="flex items-center gap-6 text-xs uppercase tracking-[0.35em] text-neutral-300">
             <span>Storefront</span>
             <span id="osTime">--:--</span>
+            <button
+              id="contrastToggle"
+              class="os-contrast-toggle"
+              type="button"
+              aria-pressed="false"
+            >
+              High Contrast
+            </button>
           </div>
         </header>
         <div class="os-content">
@@ -115,10 +146,26 @@ const paymentMethods = [
               </h1>
             </div>
             <p class="text-sm sm:text-base text-neutral-300 max-w-md">
-              Ready for a looping product reel, live catalog tiles, and in-store
-              checkout prompts with Paddle. Replace the boot video to match the
-              latest campaign.
+              A looping retail showcase for product reels, live catalog tiles,
+              and Paddle-powered checkout prompts. Swap the boot video per
+              campaign.
             </p>
+          </section>
+          <section class="os-cta">
+            <div>
+              <p class="text-xs uppercase tracking-[0.45em] text-neutral-400">
+                Call to Action
+              </p>
+              <p class="text-lg">Invite shoppers to continue on kiosk.</p>
+            </div>
+            <div class="os-cta-actions">
+              <button class="os-cta-primary" type="button">
+                Start Guided Demo
+              </button>
+              <button class="os-cta-secondary" type="button">
+                Scan for Checkout
+              </button>
+            </div>
           </section>
           <section class="os-recommendations">
             <div class="os-section-header">
@@ -149,7 +196,12 @@ const paymentMethods = [
               <div class="os-payment-grid">
                 {paymentMethods.map((method) => (
                   <article class="os-payment-card">
-                    <div class="os-payment-icon" aria-hidden="true"></div>
+                    <div
+                      class={`os-payment-icon os-payment-icon--${method.tone}`}
+                      aria-hidden="true"
+                    >
+                      <span>{method.icon}</span>
+                    </div>
                     <div>
                       <p class="os-payment-label">{method.label}</p>
                       <p class="os-payment-detail">{method.detail}</p>
@@ -162,16 +214,18 @@ const paymentMethods = [
           <section class="os-strip">
             <div>
               <p class="text-xs uppercase tracking-[0.4em] text-neutral-400">
-                Now Playing
+                Featured Promos
               </p>
-              <p class="text-lg">Kashos Digital — Launch Loop</p>
+              <p class="text-lg">Rotating spotlight tiles for retail loops.</p>
             </div>
-            <button
-              class="rounded-full border border-neutral-500 px-4 py-2 text-xs uppercase tracking-[0.35em] hover:border-white hover:text-white transition"
-              type="button"
-            >
-              Enter Kiosk
-            </button>
+            <div class="os-promo-track">
+              {promoTiles.map((tile) => (
+                <article class="os-promo-card">
+                  <p class="os-promo-title">{tile.title}</p>
+                  <p class="os-promo-detail">{tile.detail}</p>
+                </article>
+              ))}
+            </div>
           </section>
         </div>
       </div>
@@ -193,6 +247,7 @@ const paymentMethods = [
       requestAnimationFrame(() => {
         osScreen.classList.remove("opacity-0");
         osScreen.classList.add("opacity-100");
+        osScreen.classList.add("is-ready");
       });
       setTimeout(() => {
         bootScreen.classList.add("hidden");
@@ -231,6 +286,17 @@ const paymentMethods = [
       skipBoot.addEventListener("click", () => {
         clearTimeout(fallbackTimer);
         showOs();
+      });
+    }
+
+    const contrastToggle = document.getElementById("contrastToggle");
+    if (contrastToggle) {
+      contrastToggle.addEventListener("click", () => {
+        document.body.classList.toggle("high-contrast");
+        contrastToggle.setAttribute(
+          "aria-pressed",
+          document.body.classList.contains("high-contrast").toString()
+        );
       });
     }
 
@@ -383,6 +449,54 @@ const paymentMethods = [
       gap: 1.2rem;
     }
 
+    .os-cta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem 2rem;
+      padding: 1.4rem 1.6rem;
+      border-radius: 20px;
+      background: rgba(18, 20, 28, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    }
+
+    .os-cta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .os-cta-primary,
+    .os-cta-secondary {
+      border-radius: 999px;
+      padding: 0.75rem 1.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      font-size: 0.7rem;
+      border: 1px solid transparent;
+      transition: transform 0.3s ease, border-color 0.3s ease,
+        box-shadow 0.3s ease;
+    }
+
+    .os-cta-primary {
+      background: linear-gradient(135deg, rgba(120, 255, 200, 0.25), rgba(90, 160, 255, 0.35));
+      border-color: rgba(120, 255, 200, 0.5);
+      box-shadow: 0 8px 24px rgba(90, 160, 255, 0.25);
+    }
+
+    .os-cta-secondary {
+      background: rgba(12, 14, 20, 0.9);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .os-cta-primary:hover,
+    .os-cta-secondary:hover {
+      transform: translateY(-2px);
+    }
+
     .os-section-header {
       display: flex;
       flex-direction: column;
@@ -457,6 +571,27 @@ const paymentMethods = [
       border-radius: 12px;
       background: linear-gradient(135deg, rgba(90, 160, 255, 0.6), rgba(120, 255, 200, 0.5));
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+      display: grid;
+      place-items: center;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+    }
+
+    .os-payment-icon--apple {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(120, 255, 200, 0.4));
+    }
+
+    .os-payment-icon--google {
+      background: linear-gradient(135deg, rgba(90, 160, 255, 0.7), rgba(255, 220, 120, 0.35));
+    }
+
+    .os-payment-icon--cards {
+      background: linear-gradient(135deg, rgba(120, 255, 200, 0.6), rgba(90, 160, 255, 0.45));
+    }
+
+    .os-payment-icon--bank {
+      background: linear-gradient(135deg, rgba(255, 220, 120, 0.45), rgba(120, 255, 200, 0.4));
     }
 
     .os-payment-label {
@@ -473,12 +608,173 @@ const paymentMethods = [
 
     .os-strip {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      gap: 1.2rem;
+      align-items: flex-start;
       border-radius: 18px;
       padding: 1.2rem 1.8rem;
       background: rgba(10, 12, 18, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .os-promo-track {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+
+    .os-promo-card {
+      padding: 1rem 1.2rem;
+      border-radius: 16px;
+      background: rgba(16, 18, 26, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.35s ease, border-color 0.35s ease;
+      animation: promo-float 6s ease-in-out infinite;
+    }
+
+    .os-promo-card:nth-child(2) {
+      animation-delay: 1.6s;
+    }
+
+    .os-promo-card:nth-child(3) {
+      animation-delay: 3.2s;
+    }
+
+    .os-promo-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    .os-promo-detail {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.65);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .os-contrast-toggle {
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.9rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.8);
+      transition: border-color 0.3s ease, color 0.3s ease;
+    }
+
+    .os-contrast-toggle:hover {
+      border-color: rgba(255, 255, 255, 0.5);
+      color: #fff;
+    }
+
+    #osScreen .os-card,
+    #osScreen .os-payment-card,
+    #osScreen .os-payment-strip,
+    #osScreen .os-cta,
+    #osScreen .os-strip,
+    #osScreen .os-hero {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    #osScreen.is-ready .os-hero {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0.1s;
+    }
+
+    #osScreen.is-ready .os-cta {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0.2s;
+    }
+
+    #osScreen.is-ready .os-payment-strip {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0.45s;
+    }
+
+    #osScreen.is-ready .os-strip {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0.6s;
+    }
+
+    #osScreen.is-ready .os-card,
+    #osScreen.is-ready .os-payment-card {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #osScreen.is-ready .os-card:nth-child(1) {
+      transition-delay: 0.25s;
+    }
+
+    #osScreen.is-ready .os-card:nth-child(2) {
+      transition-delay: 0.32s;
+    }
+
+    #osScreen.is-ready .os-card:nth-child(3) {
+      transition-delay: 0.39s;
+    }
+
+    #osScreen.is-ready .os-card:nth-child(4) {
+      transition-delay: 0.46s;
+    }
+
+    #osScreen.is-ready .os-payment-card:nth-child(1) {
+      transition-delay: 0.5s;
+    }
+
+    #osScreen.is-ready .os-payment-card:nth-child(2) {
+      transition-delay: 0.56s;
+    }
+
+    #osScreen.is-ready .os-payment-card:nth-child(3) {
+      transition-delay: 0.62s;
+    }
+
+    #osScreen.is-ready .os-payment-card:nth-child(4) {
+      transition-delay: 0.68s;
+    }
+
+    body.high-contrast {
+      color-scheme: dark;
+    }
+
+    body.high-contrast .os-shell {
+      background: radial-gradient(circle at top right, rgba(120, 255, 220, 0.3), transparent 40%),
+        radial-gradient(circle at left, rgba(255, 220, 120, 0.2), transparent 55%),
+        #050508;
+    }
+
+    body.high-contrast .os-bar,
+    body.high-contrast .os-card,
+    body.high-contrast .os-payment-card,
+    body.high-contrast .os-payment-strip,
+    body.high-contrast .os-cta,
+    body.high-contrast .os-strip,
+    body.high-contrast .os-promo-card {
+      border-color: rgba(255, 255, 255, 0.35);
+      background: rgba(6, 8, 12, 0.95);
+    }
+
+    body.high-contrast .os-cta-primary {
+      background: linear-gradient(135deg, rgba(120, 255, 200, 0.4), rgba(90, 160, 255, 0.6));
+      border-color: rgba(120, 255, 200, 0.85);
+    }
+
+    body.high-contrast .os-cta-secondary {
+      border-color: rgba(255, 255, 255, 0.6);
+      color: #fff;
+    }
+
+    body.high-contrast .os-payment-icon {
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
     }
 
     @keyframes boot-scan {
@@ -502,6 +798,34 @@ const paymentMethods = [
       }
       100% {
         content: "...";
+      }
+    }
+
+    @keyframes promo-float {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-6px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+
+      .os-card:hover,
+      .os-payment-card:hover,
+      .os-cta-primary:hover,
+      .os-cta-secondary:hover {
+        transform: none;
       }
     }
   </style>
