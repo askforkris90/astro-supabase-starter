@@ -108,30 +108,82 @@ const purchaseContacts = [
     </div>
 
     <script>
+      import { jsPDF } from "jspdf";
+
       const checkoutBtn = document.getElementById("checkout-btn");
       if (checkoutBtn) {
-        checkoutBtn.addEventListener("click", () => {
+        checkoutBtn.addEventListener("click", async () => {
           const frameworkData = checkoutBtn.dataset.framework;
           if (frameworkData) {
             try {
               const framework = JSON.parse(frameworkData);
+              
+              // 1. Call API to create transaction
+              const response = await fetch("/api/transactions/create", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  framework_id: framework.id,
+                }),
+              });
+
+              if (!response.ok) {
+                // If API fails (e.g. no DB), fall back to local-only for demo purposes?
+                // Or throw error?
+                // For this request, we want "extended implementation" so we expect it to work.
+                // But let's be robust: if it's 503 (DB unavailable), we might want to warn.
+                const err = await response.json();
+                throw new Error(err.error || "Failed to create transaction");
+              }
+
+              const transaction = await response.json();
+
+              // 2. Generate PDF Invoice
+              const doc = new jsPDF();
+              
+              doc.setFontSize(20);
+              doc.text("INVOICE", 105, 20, { align: "center" });
+              
+              doc.setFontSize(12);
+              doc.text(`Invoice ID: ${transaction.id}`, 20, 40);
+              doc.text(`Date: ${new Date(transaction.purchased_at).toLocaleDateString()}`, 20, 50);
+              doc.text(`Status: ${transaction.status.toUpperCase()}`, 20, 60);
+              
+              doc.text("Item", 20, 80);
+              doc.text("Price", 160, 80);
+              doc.line(20, 85, 190, 85);
+              
+              doc.text(framework.name + " Commercial License", 20, 95);
+              doc.text(`$${transaction.amount}`, 160, 95);
+              
+              doc.line(20, 110, 190, 110);
+              doc.setFontSize(14);
+              doc.text("Total", 120, 120);
+              doc.text(`$${transaction.amount}`, 160, 120);
+              
+              doc.save(`invoice_${framework.name}_${transaction.id.slice(0, 8)}.pdf`);
+
+              // 3. Keep localStorage for legacy support/local state
               const existingSoftware = JSON.parse(
                 localStorage.getItem("software") || "[]"
               );
 
               existingSoftware.push({
                 ...framework,
-                purchasedAt: new Date().toISOString(),
+                purchasedAt: transaction.purchased_at,
+                transactionId: transaction.id
               });
 
               localStorage.setItem("software", JSON.stringify(existingSoftware));
 
               alert(
-                `Successfully purchased license for ${framework.name}! Saved to local storage.`
+                `Successfully purchased license for ${framework.name}! Invoice downloaded.`
               );
             } catch (e) {
               console.error("Error processing checkout:", e);
-              alert("Checkout failed.");
+              alert("Checkout failed: " + (e instanceof Error ? e.message : String(e)));
             }
           }
         });
