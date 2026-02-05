@@ -57,5 +57,48 @@ if (supabase) {
 
       <button type="submit" class="px-4 py-2 bg-green-500 rounded-sm text-neutral-800 hover:bg-green-600">Give {framework?.name} your vote &starf;</button>
     </form>
+
+    <div class="mt-8 pt-8 border-t border-neutral-600">
+      <h2 class="mb-2 text-2xl">Purchase License</h2>
+      <p class="mb-4">Get a commercial license for {framework?.name}.</p>
+      <button
+        id="checkout-btn"
+        data-framework={JSON.stringify(framework)}
+        class="px-4 py-2 bg-blue-500 rounded-sm text-white hover:bg-blue-600 transition-colors"
+      >
+        Buy Now &rarr;
+      </button>
+    </div>
+
+    <script>
+      const checkoutBtn = document.getElementById("checkout-btn");
+      if (checkoutBtn) {
+        checkoutBtn.addEventListener("click", () => {
+          const frameworkData = checkoutBtn.dataset.framework;
+          if (frameworkData) {
+            try {
+              const framework = JSON.parse(frameworkData);
+              const existingSoftware = JSON.parse(
+                localStorage.getItem("software") || "[]"
+              );
+
+              existingSoftware.push({
+                ...framework,
+                purchasedAt: new Date().toISOString(),
+              });
+
+              localStorage.setItem("software", JSON.stringify(existingSoftware));
+
+              alert(
+                `Successfully purchased license for ${framework.name}! Saved to local storage.`
+              );
+            } catch (e) {
+              console.error("Error processing checkout:", e);
+              alert("Checkout failed.");
+            }
+          }
+        });
+      }
+    </script>
   </article>
 </Layout>
