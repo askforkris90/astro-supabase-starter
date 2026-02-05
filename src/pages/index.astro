@@ -1,71 +1,416 @@
 ---
-import { getEntry } from "astro:content";
-import Alert from "../components/Alert.astro";
-import Guide from "../components/Guide.astro";
-import Layout from "../components/Layout.astro";
-import TableRow from "../components/TableRow.astro";
-import { supabase } from "../utils/database";
+import BootLayout from "../components/BootLayout.astro";
 
-export const prerender = false;
-
-let frameworks;
-let frameworksError;
-
-// Fetch frameworks data from Supabase if connection is set up
-if (supabase) {
-  const { data, error } = await supabase
-    .from("frameworks")
-    .select("*")
-    .order("likes", { ascending: false });
-  frameworks = data;
-  frameworksError = error;
-}
-
-// Get guides
-const connectGuide = await getEntry("guides", "guide-connect-supabase");
-const fetchDataGuide = await getEntry("guides", "guide-fetch-data");
+const recommendations = [
+  {
+    title: "Staff Picks",
+    description: "Curated heroes for the current campaign week.",
+  },
+  {
+    title: "New Arrivals",
+    description: "Fresh drops with launch-day pricing.",
+  },
+  {
+    title: "Bundle Offers",
+    description: "Multi-item sets and featured pairings.",
+  },
+  {
+    title: "Top Rated",
+    description: "Best-loved SKUs with high in-store saves.",
+  },
+];
 ---
 
-<Layout title="Web Frameworks">
-  {
-    supabase ? (
-      frameworks ? (
-        <>
-          <h1 class="mb-8 text-4xl font-bold">
-            Vote for Your Favorite Web Framework
-          </h1>
-          <table class="w-full text-left">
-            <thead>
-              <tr class="font-mono text-base border-t border-b">
-                <th>Name</th>
-                <th>Logo</th>
-                <th>Likes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {frameworks?.map((framework) => (
-                <TableRow framework={framework} />
+<BootLayout title="KashOS Store Display">
+  <section class="relative min-h-screen bg-black text-white">
+    <div
+      id="bootScreen"
+      class="absolute inset-0 grid place-items-center transition-opacity duration-700"
+    >
+      <div class="absolute inset-0 boot-glow"></div>
+      <div class="relative z-10 flex flex-col items-center gap-6 text-center px-6">
+        <div class="kashos-logo text-5xl sm:text-6xl tracking-[0.2em] uppercase">
+          KashOS
+        </div>
+        <p class="text-lg sm:text-xl text-neutral-200 max-w-lg">
+          Store display boot sequence for kashos.digital
+        </p>
+        <div id="bootFrame" class="boot-frame">
+          <video
+            id="bootVideo"
+            class="boot-video"
+            autoplay
+            muted
+            playsinline
+            preload="auto"
+            poster="/boot-poster.jpg"
+          >
+            <source src="/boot.webm" type="video/webm" />
+            <source src="/boot.mp4" type="video/mp4" />
+          </video>
+          <div class="boot-fallback">
+            <div class="boot-scan"></div>
+            <div class="boot-status">
+              Loading storefront experience
+              <span class="boot-dots" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+        <button
+          id="skipBoot"
+          class="rounded-full border border-neutral-500 px-5 py-2 text-sm uppercase tracking-[0.25em] hover:border-white hover:text-white transition"
+          type="button"
+        >
+          Skip Boot
+        </button>
+      </div>
+    </div>
+
+    <div
+      id="osScreen"
+      class="absolute inset-0 hidden opacity-0 transition-opacity duration-700"
+    >
+      <div class="os-shell">
+        <header class="os-bar">
+          <div class="flex items-center gap-3">
+            <span class="os-dot"></span>
+            <span class="os-dot os-dot--amber"></span>
+            <span class="os-dot os-dot--green"></span>
+            <span class="text-sm tracking-[0.4em] uppercase text-neutral-300">
+              KashOS
+            </span>
+          </div>
+          <div class="flex items-center gap-6 text-xs uppercase tracking-[0.35em] text-neutral-300">
+            <span>Storefront</span>
+            <span id="osTime">--:--</span>
+          </div>
+        </header>
+        <div class="os-content">
+          <section class="os-hero">
+            <div>
+              <p class="text-xs uppercase tracking-[0.5em] text-neutral-400">
+                Active Mode
+              </p>
+              <h1 class="text-4xl sm:text-5xl font-semibold">
+                Storefront OS Display
+              </h1>
+            </div>
+            <p class="text-sm sm:text-base text-neutral-300 max-w-md">
+              Ready for a looping product reel, live catalog tiles, and in-store
+              checkout prompts. Replace the boot video to match the latest
+              campaign.
+            </p>
+          </section>
+          <section class="os-recommendations">
+            <div class="os-section-header">
+              <p class="text-xs uppercase tracking-[0.5em] text-neutral-400">
+                Recommendations
+              </p>
+              <p class="text-sm text-neutral-300">
+                Updated highlights to keep the store display fresh.
+              </p>
+            </div>
+            <div class="os-grid">
+              {recommendations.map((item) => (
+                <article class="os-card">
+                  <h2>{item.title}</h2>
+                  <p>{item.description}</p>
+                </article>
               ))}
-            </tbody>
-          </table>
-        </>
-      ) : (
-        <>
-          {frameworksError && (
-            <Alert
-              title={frameworksError.code}
-              text={frameworksError.message}
-              variant="error"
-            />
-          )}
-          {fetchDataGuide && <Guide guide={fetchDataGuide} />}
-        </>
-      )
-    ) : (
-      <>
-        <Alert title="Finish setting up your new site" text="Before your website is ready, you must complete the steps from the guide below to create, populate, and connect your Supabase database."/>
-        {connectGuide && <Guide guide={connectGuide} />}
-      </>
-    )
-  }
-</Layout>
+            </div>
+          </section>
+          <section class="os-strip">
+            <div>
+              <p class="text-xs uppercase tracking-[0.4em] text-neutral-400">
+                Now Playing
+              </p>
+              <p class="text-lg">Kashos Digital — Launch Loop</p>
+            </div>
+            <button
+              class="rounded-full border border-neutral-500 px-4 py-2 text-xs uppercase tracking-[0.35em] hover:border-white hover:text-white transition"
+              type="button"
+            >
+              Enter Kiosk
+            </button>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const bootScreen = document.getElementById("bootScreen");
+    const osScreen = document.getElementById("osScreen");
+    const bootVideo = document.getElementById("bootVideo");
+    const bootFrame = document.getElementById("bootFrame");
+    const skipBoot = document.getElementById("skipBoot");
+    const osTime = document.getElementById("osTime");
+
+    const showOs = () => {
+      if (!bootScreen || !osScreen) return;
+      bootScreen.classList.add("opacity-0");
+      osScreen.classList.remove("hidden");
+      requestAnimationFrame(() => {
+        osScreen.classList.remove("opacity-0");
+        osScreen.classList.add("opacity-100");
+      });
+      setTimeout(() => {
+        bootScreen.classList.add("hidden");
+      }, 700);
+    };
+
+    const updateTime = () => {
+      if (!osTime) return;
+      const now = new Date();
+      osTime.textContent = now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    };
+
+    updateTime();
+    setInterval(updateTime, 30000);
+
+    const fallbackTimer = setTimeout(showOs, 8500);
+
+    if (bootVideo) {
+      bootVideo.addEventListener("canplay", () => {
+        if (bootFrame) bootFrame.classList.add("is-playing");
+      });
+      bootVideo.addEventListener("ended", () => {
+        clearTimeout(fallbackTimer);
+        showOs();
+      });
+      bootVideo.addEventListener("error", () => {
+        clearTimeout(fallbackTimer);
+        showOs();
+      });
+    }
+
+    if (skipBoot) {
+      skipBoot.addEventListener("click", () => {
+        clearTimeout(fallbackTimer);
+        showOs();
+      });
+    }
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" || event.key === " ") {
+        clearTimeout(fallbackTimer);
+        showOs();
+      }
+    });
+  </script>
+
+  <style is:global>
+    @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Unbounded:wght@500;700&display=swap");
+
+    :root {
+      color-scheme: dark;
+    }
+
+    body {
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+    }
+
+    .kashos-logo {
+      font-family: "Unbounded", "Space Grotesk", sans-serif;
+    }
+
+    .boot-glow {
+      background: radial-gradient(circle at top, rgba(112, 255, 200, 0.35), transparent 55%),
+        radial-gradient(circle at 30% 80%, rgba(120, 80, 255, 0.35), transparent 60%),
+        linear-gradient(120deg, rgba(15, 15, 20, 0.95), rgba(5, 5, 8, 0.98));
+      filter: blur(0);
+    }
+
+    .boot-frame {
+      position: relative;
+      width: min(720px, 90vw);
+      aspect-ratio: 16 / 9;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      background: #0d0d12;
+    }
+
+    .boot-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .boot-fallback {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(14, 16, 24, 0.92), rgba(6, 6, 10, 0.98));
+      color: rgba(255, 255, 255, 0.8);
+      text-transform: uppercase;
+      letter-spacing: 0.45em;
+      font-size: 0.7rem;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .boot-frame.is-playing .boot-fallback {
+      opacity: 0;
+    }
+
+    .boot-scan {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(120, 255, 220, 0.1) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      animation: boot-scan 3s linear infinite;
+      opacity: 0.8;
+    }
+
+    .boot-status {
+      position: relative;
+      z-index: 1;
+    }
+
+    .boot-dots::after {
+      content: "";
+      display: inline-block;
+      width: 1.8em;
+      animation: boot-dots 1.4s steps(3, end) infinite;
+      text-align: left;
+    }
+
+    .os-shell {
+      height: 100%;
+      background: radial-gradient(circle at top right, rgba(90, 160, 255, 0.25), transparent 45%),
+        radial-gradient(circle at left, rgba(120, 255, 200, 0.2), transparent 55%),
+        #0b0b10;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .os-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(8, 8, 12, 0.85);
+      backdrop-filter: blur(18px);
+    }
+
+    .os-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #ff5f56;
+      box-shadow: 0 0 8px rgba(255, 95, 86, 0.6);
+    }
+
+    .os-dot--amber {
+      background: #ffbd2e;
+      box-shadow: 0 0 8px rgba(255, 189, 46, 0.6);
+    }
+
+    .os-dot--green {
+      background: #27c93f;
+      box-shadow: 0 0 8px rgba(39, 201, 63, 0.6);
+    }
+
+    .os-content {
+      flex: 1;
+      padding: 2.5rem clamp(1.5rem, 6vw, 4rem);
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .os-hero {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .os-recommendations {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .os-section-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .os-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .os-card {
+      padding: 1.5rem;
+      border-radius: 20px;
+      background: rgba(14, 16, 22, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+      transition: transform 0.4s ease, border 0.4s ease;
+    }
+
+    .os-card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .os-card p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+    }
+
+    .os-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(120, 255, 220, 0.4);
+    }
+
+    .os-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 18px;
+      padding: 1.2rem 1.8rem;
+      background: rgba(10, 12, 18, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    @keyframes boot-scan {
+      0% {
+        transform: translateY(-100%);
+      }
+      100% {
+        transform: translateY(100%);
+      }
+    }
+
+    @keyframes boot-dots {
+      0% {
+        content: "";
+      }
+      33% {
+        content: ".";
+      }
+      66% {
+        content: "..";
+      }
+      100% {
+        content: "...";
+      }
+    }
+  </style>
+</BootLayout>
