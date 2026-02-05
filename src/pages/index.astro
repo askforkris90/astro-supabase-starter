@@ -283,7 +283,15 @@ const promoTiles = [
     }
 
     if (skipBoot) {
-      skipBoot.addEventListener("click", () => {
+      skipBoot.addEventListener("click", (e) => {
+        e.stopPropagation();
+        clearTimeout(fallbackTimer);
+        showOs();
+      });
+    }
+
+    if (bootScreen) {
+      bootScreen.addEventListener("click", () => {
         clearTimeout(fallbackTimer);
         showOs();
       });
@@ -435,6 +443,8 @@ const promoTiles = [
       display: flex;
       flex-direction: column;
       gap: 2.5rem;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .os-hero {
