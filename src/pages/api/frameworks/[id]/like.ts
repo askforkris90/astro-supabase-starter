@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { supabase } from "../../../../utils/database";
+import { sql } from "../../../../utils/db";
 
 export const prerender = false;
 
@@ -9,29 +9,17 @@ export const POST: APIRoute = async ({ params, redirect }) => {
     return new Response("No framework id provided", { status: 400 });
   }
 
-  if (supabase) {
-    const { data: framework } = await supabase
-      .from("frameworks")
-      .select("*")
-      .eq("id", id)
-      .single();
+  try {
+    const result = await sql`UPDATE frameworks SET likes = likes + 1 WHERE id = ${id} RETURNING *`;
 
-    if (!framework) {
-      return new Response(`Where'd that pet go?`, { status: 404 });
+    if (result.length === 0) {
+      return new Response(`Where'd that framework go?`, { status: 404 });
     }
 
-    const { error: updateError } = await supabase
-      .from("frameworks")
-      .update({
-        likes: framework.likes + 1,
-      })
-      .eq("id", framework.id);
-
-    if (updateError) {
-      console.error(updateError);
-    }
-    return redirect(`/frameworks/${framework.id}`, 303);
+    const framework = result[0];
+    return redirect(`/frameworks/${framework.slug}`, 303);
+  } catch (error) {
+    console.error(error);
+    return new Response(error instanceof Error ? error.message : String(error), { status: 500 });
   }
-
-  return new Response("No supabase url provided", { status: 400 });
 };

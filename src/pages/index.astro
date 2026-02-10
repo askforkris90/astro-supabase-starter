@@ -4,67 +4,61 @@ import Alert from "../components/Alert.astro";
 import Guide from "../components/Guide.astro";
 import Layout from "../components/Layout.astro";
 import TableRow from "../components/TableRow.astro";
-import { supabase } from "../utils/database";
+import { sql, ensureTables } from "../utils/db";
+import type { Framework } from "../utils/types";
 
 export const prerender = false;
 
-let frameworks;
-let frameworksError;
+let frameworks: Framework[] | undefined;
+let frameworksError: any;
 
-// Fetch frameworks data from Supabase if connection is set up
-if (supabase) {
-  const { data, error } = await supabase
-    .from("frameworks")
-    .select("*")
-    .order("likes", { ascending: false });
-  frameworks = data;
+try {
+  // Ensure tables exist and are seeded
+  await ensureTables();
+  
+  // Fetch frameworks data from Netlify DB
+  const result = await sql`SELECT * FROM frameworks ORDER BY likes DESC`;
+  frameworks = result as unknown as Framework[];
+} catch (error) {
   frameworksError = error;
 }
-
 // Get guides
-const connectGuide = await getEntry("guides", "guide-connect-supabase");
-const fetchDataGuide = await getEntry("guides", "guide-fetch-data");
+const netlifyDbGuide = await getEntry("guides", "guide-netlify-db");
 ---
 
 <Layout title="Web Frameworks">
   {
-    supabase ? (
-      frameworks ? (
-        <>
-          <h1 class="mb-8 text-4xl font-bold">
-            Vote for Your Favorite Web Framework
-          </h1>
-          <table class="w-full text-left">
-            <thead>
-              <tr class="font-mono text-base border-t border-b">
-                <th>Name</th>
-                <th>Logo</th>
-                <th>Likes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {frameworks?.map((framework) => (
-                <TableRow framework={framework} />
-              ))}
-            </tbody>
-          </table>
-        </>
-      ) : (
-        <>
-          {frameworksError && (
-            <Alert
-              title={frameworksError.code}
-              text={frameworksError.message}
-              variant="error"
-            />
-          )}
-          {fetchDataGuide && <Guide guide={fetchDataGuide} />}
-        </>
-      )
+    frameworks ? (
+      <>
+        <h1 class="mb-8 text-4xl font-bold">
+          Vote for Your Favorite Web Framework
+        </h1>
+        <table class="w-full text-left">
+          <thead>
+            <tr class="font-mono text-base border-t border-b">
+              <th>Name</th>
+              <th>Logo</th>
+              <th>Likes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {frameworks?.map((framework) => (
+              <TableRow framework={framework} />
+            ))}
+          </tbody>
+        </table>
+      </>
     ) : (
       <>
-        <Alert title="Finish setting up your new site" text="Before your website is ready, you must complete the steps from the guide below to create, populate, and connect your Supabase database."/>
-        {connectGuide && <Guide guide={connectGuide} />}
+        {frameworksError && (
+          <Alert
+            title="Database Error"
+            text={frameworksError instanceof Error ? frameworksError.message : String(frameworksError)}
+            variant="error"
+          />
+        )}
+        <Alert title="Connecting to Database" text="Before your website is ready, you must connect a database in the Netlify UI or via the CLI."/>
+        {netlifyDbGuide && <Guide guide={netlifyDbGuide} />}
       </>
     )
   }
