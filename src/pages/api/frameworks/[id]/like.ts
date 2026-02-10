@@ -17,7 +17,7 @@ export const POST: APIRoute = async ({ params, redirect }) => {
       .single();
 
     if (!framework) {
-      return new Response(`Where'd that pet go?`, { status: 404 });
+      return new Response("Framework not found", { status: 404 });
     }
 
     const { error: updateError } = await supabase

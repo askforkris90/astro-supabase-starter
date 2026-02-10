@@ -10,7 +10,7 @@ if (!id) {
   throw new Error("No framework id provided");
 }
 
-// Fetch pet data from Supabase if connection is set up
+// Fetch framework data from Supabase if connection is set up
 let framework;
 if (supabase) {
   const { data, error } = await supabase
@@ -27,6 +27,9 @@ if (supabase) {
 ---
 
 <Layout title={`${framework?.name} | Frameworks`}>
+  <nav class="mb-8">
+    <a href="/" class="text-green-500 hover:underline">&larr; Back to all frameworks</a>
+  </nav>
   <article class="border-b pb-14 border-neutral-600">
     <header
       class="flex flex-wrap items-center justify-between pb-2 mb-8 border-b"
