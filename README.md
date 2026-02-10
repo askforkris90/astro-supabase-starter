@@ -1,16 +1,21 @@
-# Astro Supabase Starter
+# Astro Netlify DB Starter
 
-![Astro Supabase Starter Preview](astro-supabase-starter-preview.png)
+![Astro Netlify DB Starter Preview](astro-netlify-db-starter-preview.png)
 
-**View demo:** [https://astro-supabase-starter.netlify.app/](https://astro-supabase-starter.netlify.app/)
+The Astro Netlify DB starter demonstrates how to integrate **Netlify DB** (powered by Neon) into an Astro project deployed on Netlify.
 
-The Astro Supabase starter demonstrates how to integrate **Supabase** into an Astro project deployed on Netlify.
+## Features
+
+- **Netlify DB Integration**: Seamless, passwordless Postgres database.
+- **Astro**: Fast, content-focused web framework.
+- **Auto-Seeding**: Automatically creates and seeds the database with initial data.
+- **CRUD Operations**: List, Like (Update), and Add (Create) web frameworks.
 
 ## Deploying to Netlify
 
 If you click "Deploy to Netlify" button, it will create a new repo for you that looks exactly like this one, and sets that repo up immediately for deployment on Netlify.
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/netlify-templates/astro-supabase-starter&fullConfiguration=true)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/askforkris90/astro-supabase-starter&fullConfiguration=true)
 
 ## Astro Commands
 
@@ -33,38 +38,23 @@ All commands are run from the root of the project, from a terminal:
 | (optional) [nvm](https://github.com/nvm-sh/nvm) for Node version management  |
 | [Netlify account](https://netlify.com/)                                      |
 | [Netlify CLI](https://docs.netlify.com/cli/get-started/).                    |
-| [Supabase account](https://supabase.com/)                                    |
 
 ### Set up the database
 
-To use this template, you’ll need to set up and seed a new Supabase database.
+To use this template with Netlify DB, you simply need to initialize it via the Netlify CLI.
 
-1. Create a new Supabase project.
-2. Run the SQL commands found in the `supabase/migrations` directory in the Supabase UI.
-3. To seed the database with data, you can import the contents of the `supabase/seed.csv` file in the Supabase UI.
-
-ℹ️ _Note: This template was created to be used with the Supabase extension for Netlify. If you don’t wish to use the Netlify Supabase extension, you will need to set the `SUPABASE_DATABASE_URL` and `SUPABASE_ANON_KEY` environment variables in the `.env` file._
+1. Link your local repository to a Netlify site: `netlify link`
+2. Initialize the database: `netlify db init`
+3. The application will automatically create and seed the `frameworks` table on its first run.
 
 ### Install and run locally
 
 1. Clone this repository, then run `npm install` in its root directory.
 
-2. For the starter to have full functionality locally, please ensure you have an up-to-date version of Netlify CLI. Run:
+2. Run the Astro.js development server via Netlify CLI:
 
 ```
-npm install netlify-cli@latest -g
-```
-
-3. Link your local repository to the deployed Netlify site. This will ensure you're using the same runtime version for both local development and your deployed site.
-
-```
-netlify link
-```
-
-4. Then, run the Astro.js development server via Netlify CLI:
-
-```
-netlify dev --target-port 4321
+netlify dev
 ```
 
 If your browser doesn't navigate to the site automatically, visit [localhost:8888](http://localhost:8888).

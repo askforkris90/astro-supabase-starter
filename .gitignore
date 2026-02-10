@@ -27,4 +27,4 @@ pnpm-debug.log*
 .netlify
 
 # Supabase
-supabase/.temp
+

@@ -1,0 +1,36 @@
+---
+import Layout from "../components/Layout.astro";
+
+export const prerender = false;
+---
+
+<Layout title="Add New Framework">
+  <h1 class="mb-8 text-4xl font-bold">Add a New Framework</h1>
+  
+  <form action="/api/frameworks" method="post" class="max-w-md space-y-6">
+    <div>
+      <label for="name" class="block mb-2 font-bold">Name</label>
+      <input type="text" id="name" name="name" required class="w-full p-2 text-black rounded-sm border border-neutral-500" />
+    </div>
+    
+    <div>
+      <label for="url" class="block mb-2 font-bold">Website URL</label>
+      <input type="url" id="url" name="url" required class="w-full p-2 text-black rounded-sm border border-neutral-500" />
+    </div>
+
+    <div>
+      <label for="logo" class="block mb-2 font-bold">Logo URL</label>
+      <input type="url" id="logo" name="logo" required class="w-full p-2 text-black rounded-sm border border-neutral-500" placeholder="https://example.com/logo.png" />
+      <p class="mt-1 text-sm text-neutral-400">Provide a direct URL to an image file.</p>
+    </div>
+    
+    <div>
+      <label for="description" class="block mb-2 font-bold">Description</label>
+      <textarea id="description" name="description" required rows="4" class="w-full p-2 text-black rounded-sm border border-neutral-500"></textarea>
+    </div>
+    
+    <button type="submit" class="px-6 py-2 bg-green-500 rounded-sm text-neutral-800 hover:bg-green-600 font-bold transition-colors">
+      Add Framework
+    </button>
+  </form>
+</Layout>

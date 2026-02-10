@@ -1,28 +1,27 @@
 ---
 import Layout from "../../components/Layout.astro";
-import { supabase } from "../../utils/database";
+import { sql } from "../../utils/db";
 
 export const prerender = false;
 
-const { id } = Astro.params;
+const { slug } = Astro.params;
 
-if (!id) {
-  throw new Error("No framework id provided");
+if (!slug) {
+  throw new Error("No framework slug provided");
 }
 
-// Fetch pet data from Supabase if connection is set up
+// Fetch framework data from Netlify DB
 let framework;
-if (supabase) {
-  const { data, error } = await supabase
-    .from("frameworks")
-    .select("*")
-    .eq("id", id)
-    .single();
-  framework = data ? data : null;
-  if (error || !framework) {
-    console.error(error);
+try {
+  const result = await sql`SELECT * FROM frameworks WHERE slug = ${slug}`;
+  framework = result.length > 0 ? result[0] : null;
+  
+  if (!framework) {
     throw new Error("No framework found");
   }
+} catch (error) {
+  console.error(error);
+  throw new Error("Failed to fetch framework");
 }
 ---
 
@@ -37,7 +36,7 @@ if (supabase) {
 
     <figure>
       <img
-        src={`/.netlify/images?url=/images/${framework?.logo}`}
+        src={framework?.logo.startsWith('http') ? framework.logo : `/.netlify/images?url=/images/${framework?.logo}`}
         alt={framework?.name}
         class="mb-2 border rounded-sm border-neutral-500"
       />

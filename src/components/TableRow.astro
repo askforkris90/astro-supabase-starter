@@ -1,8 +1,8 @@
 ---
-import type { Tables } from "../../supabase/types.ts";
+import type { Framework } from "../utils/types";
 
 interface Props {
-  framework: Tables<"frameworks">;
+  framework: Framework;
 }
 
 const { framework } = Astro.props;
@@ -12,11 +12,11 @@ const { framework } = Astro.props;
   <td class="text-xl font-bold">{framework.name}</td>
   <td>
     <img
-      src={`/.netlify/images?url=/images/${framework.logo}`}
+      src={framework.logo.startsWith('http') ? framework.logo : `/.netlify/images?url=/images/${framework.logo}`}
       class="w-32"
       alt={framework.name}
     />
   </td>
   <td>{framework.likes} like{framework.likes === 1 ? "" : "s"}</td>
-  <td><a href={`/frameworks/${framework.id}`} class="underline">Learn more &rarr;</a></td>
+  <td><a href={`/frameworks/${framework.slug}`} class="underline">Learn more &rarr;</a></td>
 </tr>
