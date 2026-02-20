@@ -39,6 +39,43 @@ export type Database = {
         };
         Relationships: [];
       };
+      transactions: {
+        Row: {
+          id: string;
+          framework_id: string;
+          amount: number;
+          currency: string;
+          status: string;
+          customer_email: string | null;
+          purchased_at: string;
+        };
+        Insert: {
+          id?: string;
+          framework_id: string;
+          amount?: number;
+          currency?: string;
+          status?: string;
+          customer_email?: string | null;
+          purchased_at?: string;
+        };
+        Update: {
+          id?: string;
+          framework_id?: string;
+          amount?: number;
+          currency?: string;
+          status?: string;
+          customer_email?: string | null;
+          purchased_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "transactions_framework_id_fkey";
+            columns: ["framework_id"];
+            referencedRelation: "frameworks";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
